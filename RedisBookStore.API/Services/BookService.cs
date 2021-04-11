@@ -21,13 +21,21 @@ namespace RedisBookStore.API.Services
             var bookKey = new RedisKey(book.GetType().Name + ":" + book.Id);
             var authorKey = new RedisKey(book.GetType().Name + ":" + book.Id + ":authors");
             db.HashSet(bookKey, RedisConverter.ToHashEntries(book));
+            foreach (var author in book.Authors)
+            {
+                db.SetAdd(authorKey, author);
+            }
+            
             return await Task.Run(() => new Book());
         }
 
         public async Task<Book>  GetBook(string id)
         {
             var bookKey = new RedisKey(new Book().GetType().Name + ":" + id);
+            
+            
             //TODO add in the actual return not a mock
+            
             return await Task.Run(() => new Book());
         }
 
