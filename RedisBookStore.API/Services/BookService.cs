@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using RedisBookStore.API.Helpers;
 using RedisBookStore.API.Models;
@@ -29,14 +30,19 @@ namespace RedisBookStore.API.Services
             return await Task.Run(() => new Book());
         }
 
-        public async Task<Book>  GetBook(string id)
+        public async Task<Book> GetBook(string id)
         {
+            var db = await _redisProvider.Database();
             var bookKey = new RedisKey(new Book().GetType().Name + ":" + id);
+            var authorKey = new RedisKey(new Book().GetType().Name + ":" + id + ":authors");
+
+            var bookHash = db.HashGetAll(bookKey);
+            var book = RedisConverter.ConvertFromRedis<Book>(bookHash);
+            var authors = db.SetMembers(authorKey);
             
-            
-            //TODO add in the actual return not a mock
-            
-            return await Task.Run(() => new Book());
+            book.Authors = authors.Select(author => author.ToString()).ToArray();
+
+            return book;
         }
 
         public async Task<Book[]> CreateBooks(Book[] books)
