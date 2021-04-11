@@ -7,7 +7,7 @@ using StackExchange.Redis;
 
 namespace RedisBookStore.API.Helpers
 {
-    public class RedisConverter
+    public static class RedisConverter
     {
         public static HashEntry[] ToHashEntries(object obj)
         {
